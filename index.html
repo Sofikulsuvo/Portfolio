@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sofikul Islam — Security Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E12; --surface:#111820; --surface2:#151E27; --line:#232E38;
+    --text:#E4E9ED; --muted:#7C8896; --amber:#E8A33D; --cyan:#4FA8B5;
+    --font-head:'Space Grotesk',sans-serif; --font-body:'IBM Plex Sans',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.6;}
+  a{color:inherit;}
+  ::selection{background:var(--amber); color:#0A0E12;}
+
+  .wrap{display:grid; grid-template-columns:220px 1fr; max-width:1180px; margin:0 auto;}
+  @media (max-width:860px){ .wrap{display:block;} }
+
+  /* ---- Nav (trace log) ---- */
+  nav.trace{
+    position:sticky; top:0; align-self:start; height:100vh; padding:48px 16px 24px 8px;
+    display:flex; flex-direction:column; gap:2px;
+  }
+  @media (max-width:860px){
+    nav.trace{position:fixed; top:env(safe-area-inset-top,0px); left:0; right:0; height:auto; z-index:20;
+      background:rgba(10,14,18,.92); backdrop-filter:blur(6px); flex-direction:row; justify-content:space-between;
+      padding:10px 16px; border-bottom:1px solid var(--line); overflow-x:auto; gap:14px;}
+  }
+  .brand{font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-bottom:28px; white-space:nowrap;}
+  @media (max-width:860px){ .brand{margin-bottom:0;} }
+  .hop{
+    position:relative; padding:9px 0 9px 22px; font-family:var(--font-mono); font-size:12.5px; color:var(--muted);
+    text-decoration:none; border-left:1px solid var(--line); margin-left:5px; transition:color .15s;
+  }
+  @media (max-width:860px){ .hop{border-left:none; margin-left:0; padding:0; flex:0 0 auto;} }
+  .hop::before{
+    content:''; position:absolute; left:-4.5px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%; background:var(--bg); border:1.5px solid var(--line); transition:.2s;
+  }
+  @media (max-width:860px){ .hop::before{display:none;} }
+  .hop .n{color:#4a5560; margin-right:8px;}
+  .hop.active{color:var(--text);}
+  .hop.active::before{background:var(--amber); border-color:var(--amber); box-shadow:0 0 0 3px rgba(232,163,61,.15);}
+  .hop:hover{color:var(--text);}
+
+  /* ---- Main content ---- */
+  main{padding:0 24px 80px; min-width:0;}
+  @media (max-width:860px){ main{padding:76px 20px 60px;} }
+  section{padding:64px 0; border-bottom:1px solid var(--line); scroll-margin-top:24px;}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; color:var(--cyan); margin:0 0 10px;}
+  h1,h2,h3{font-family:var(--font-head); font-weight:600; margin:0;}
+  h2{font-size:26px; margin-bottom:24px; color:var(--text);}
+  p{color:var(--muted); margin:0 0 14px; max-width:62ch;}
+
+  /* Hero */
+  #hero{padding-top:56px; border-bottom:1px solid var(--line);}
+  @media (max-width:860px){ #hero{padding-top:20px;} }
+  .role{font-family:var(--font-mono); color:var(--amber); font-size:14px; margin-bottom:14px;}
+  h1{font-size:clamp(34px,5vw,52px); line-height:1.08; max-width:14ch;}
+  .lede{font-size:17px; max-width:56ch; margin-top:18px;}
+  .contact-row{display:flex; flex-wrap:wrap; gap:18px; margin-top:26px; font-family:var(--font-mono); font-size:12.5px;}
+  .contact-row a{color:var(--muted); text-decoration:none; border-bottom:1px dotted var(--line); padding-bottom:2px;}
+  .contact-row a:hover{color:var(--cyan); border-color:var(--cyan);}
+  .stats{display:flex; gap:36px; margin-top:40px; flex-wrap:wrap;}
+  .stat b{display:block; font-family:var(--font-head); font-size:28px; color:var(--text);}
+  .stat span{font-size:11.5px; color:var(--muted); font-family:var(--font-mono);}
+
+  /* Skills */
+  .skill-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .skill-cat{background:var(--surface); padding:20px;}
+  .skill-cat h3{font-size:13px; color:var(--cyan); font-family:var(--font-mono); font-weight:500; margin-bottom:10px;}
+  .skill-cat ul{margin:0; padding:0; list-style:none; font-size:13.5px; color:var(--muted); line-height:1.9;}
+
+  /* Projects */
+  .project{padding:26px 0; border-top:1px solid var(--line);}
+  .project:first-of-type{border-top:none; padding-top:0;}
+  .project-head{display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap;}
+  .project-head h3{font-size:18px; color:var(--text);}
+  .tag{font-family:var(--font-mono); font-size:11px; color:var(--amber);}
+  .project ul{margin:12px 0 0; padding-left:18px; color:var(--muted); font-size:14.5px;}
+  .project li{margin-bottom:6px;}
+
+  /* Credentials */
+  .cred-cols{display:grid; grid-template-columns:1fr 1fr; gap:40px;}
+  @media (max-width:640px){ .cred-cols{grid-template-columns:1fr;} }
+  .cred-cols h3{font-size:13px; color:var(--cyan); font-family:var(--font-mono); font-weight:500; margin-bottom:14px;}
+  .cred-item{margin-bottom:16px;}
+  .cred-item b{display:block; font-size:14.5px; color:var(--text); font-weight:500;}
+  .cred-item span{font-size:12.5px; color:var(--muted); font-family:var(--font-mono);}
+
+  /* Contact */
+  #contact p{max-width:52ch;}
+  .send{display:inline-block; margin-top:10px; font-family:var(--font-mono); font-size:13.5px; color:var(--bg);
+    background:var(--amber); padding:12px 22px; text-decoration:none; border-radius:2px;}
+  .send:hover{background:#f0b256;}
+  footer{padding:28px 0 0; font-family:var(--font-mono); font-size:11.5px; color:#4a5560;}
+
+  :focus-visible{outline:2px solid var(--cyan); outline-offset:3px;}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="trace" id="nav">
+    <div class="brand">SI / trace</div>
+    <a class="hop" data-target="hero" href="#hero"><span class="n">00</span>start</a>
+    <a class="hop" data-target="about" href="#about"><span class="n">01</span>about</a>
+    <a class="hop" data-target="skills" href="#skills"><span class="n">02</span>skills</a>
+    <a class="hop" data-target="projects" href="#projects"><span class="n">03</span>projects</a>
+    <a class="hop" data-target="credentials" href="#credentials"><span class="n">04</span>credentials</a>
+    <a class="hop" data-target="contact" href="#contact"><span class="n">05</span>contact</a>
+  </nav>
+
+  <main>
+    <section id="hero">
+      <div class="role">Aspiring Security Engineer</div>
+      <h1>Sofikul Islam</h1>
+      <p class="lede">Final-year ICE student who traces problems down to the packet — building enterprise routing labs, running independent SOC operations, and mapping attacks to MITRE ATT&CK.</p>
+      <div class="contact-row">
+        <a href="mailto:Sofikul9121@gmail.com">Sofikul9121@gmail.com</a>
+        <a href="tel:+8801776043230">+880 1776 043230</a>
+        <span>Dhaka, Bangladesh</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>100+</b><span>TryHackMe / HTB rooms</span></div>
+        <div class="stat"><b>30+</b><span>adversary simulations</span></div>
+        <div class="stat"><b>500MB+</b><span>traffic dissected</span></div>
+        <div class="stat"><b>4</b><span>core certifications</span></div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="eyebrow">01 / about</div>
+      <h2>Summary</h2>
+      <p>I design and simulate multi-tier enterprise topologies, configure dynamic routing with OSPF and BGP, and segment networks with VLANs and ACLs. On the security side I run independent SOC labs with Wazuh, Splunk, and Zabbix, tracing system events and simulating attacks aligned to MITRE ATT&CK. I hold CCNA, MTCNA, and Level 4 Penetration Testing certifications and am building toward high-availability, secure network infrastructure.</p>
+    </section>
+
+    <section id="skills">
+      <div class="eyebrow">02 / skills</div>
+      <h2>Technical &amp; domain skills</h2>
+      <div class="skill-grid">
+        <div class="skill-cat">
+          <h3>Routing &amp; switching</h3>
+          <ul><li>OSPF, BGP fundamentals</li><li>VLANs (802.1Q), inter-VLAN routing</li><li>Subnetting, VPNs, ACLs</li><li>Cisco Packet Tracer, GNS3</li></ul>
+        </div>
+        <div class="skill-cat">
+          <h3>SOC &amp; SIEM</h3>
+          <ul><li>Splunk, Wazuh</li><li>Log correlation, alert tuning</li><li>MITRE ATT&CK &amp; Navigator</li><li>Threat intel feeds, IOC isolation</li></ul>
+        </div>
+        <div class="skill-cat">
+          <h3>Offensive security</h3>
+          <ul><li>Nmap, Metasploit, OpenVAS</li><li>Nikto, Burp Suite</li><li>OWASP Top 10</li><li>Social engineering, phishing sims</li></ul>
+        </div>
+        <div class="skill-cat">
+          <h3>Forensics &amp; threat hunting</h3>
+          <ul><li>Sysmon, Procmon, Regshot</li><li>Memory forensics</li><li>C2 traffic detection</li><li>Artifact analysis</li></ul>
+        </div>
+        <div class="skill-cat">
+          <h3>Diagnostics &amp; NMS</h3>
+          <ul><li>Wireshark, tcpdump</li><li>Zabbix NMS, SNMP</li><li>Syslog management</li><li>Ping / traceroute, firewalls</li></ul>
+        </div>
+        <div class="skill-cat">
+          <h3>Systems &amp; scripting</h3>
+          <ul><li>Linux, Windows</li><li>Bash scripting</li><li>grep, awk, sed, cron</li><li>Python fundamentals</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="eyebrow">03 / projects</div>
+      <h2>Selected work</h2>
+
+      <div class="project">
+        <div class="project-head"><h3>Enterprise IP Network &amp; Multi-Protocol Routing Lab</h3><span class="tag">GNS3 · Packet Tracer</span></div>
+        <ul>
+          <li>Designed and simulated multi-tier topologies across Linux routers, provisioning Layer-2 and Layer-3 fabrics.</li>
+          <li>Configured OSPF and fundamental BGP peering to achieve sub-second convergence.</li>
+          <li>Set up VLAN segmentation, trunking, inter-VLAN routing, and ACL security policies.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head"><h3>SIEM &amp; Network Security Practice Lab</h3><span class="tag">TryHackMe · Hack The Box</span></div>
+        <ul>
+          <li>Built and managed an independent SOC lab correlating logs across 5+ Linux/Windows endpoints.</li>
+          <li>Ran 30+ controlled adversary simulations — phishing, brute-force, malware execution — mapped to MITRE ATT&CK.</li>
+          <li>Solved 100+ practical rooms spanning artifact analysis, memory forensics, and SIEM rule tuning.</li>
+          <li>Cut false-positive alerts by ~30% by optimizing log pipelines with grep, awk, and cat.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head"><h3>Telecommunication &amp; Protocol Diagnostics Lab</h3><span class="tag">Wireshark · tcpdump</span></div>
+        <ul>
+          <li>Captured and dissected 500MB+ of live traffic to diagnose handshakes, window sizing, MTU mismatches, and ARP latency.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head"><h3>AgentSOC-X</h3><span class="tag">In development</span></div>
+        <ul>
+          <li>Autonomous agent-based SOC platform integrating Wazuh alerts with real-time threat intelligence and ATT&CK correlation.</li>
+          <li>Implementing ML and graph-based attack path modeling alongside local LLM reasoning to automate triage and response.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="credentials">
+      <div class="eyebrow">04 / credentials</div>
+      <h2>Certifications &amp; education</h2>
+      <div class="cred-cols">
+        <div>
+          <h3>Certifications</h3>
+          <div class="cred-item"><b>Certified Penetration Testing — Level 4</b><span>NSDA Reg: NSC-ICT-PTF-L4-001071</span></div>
+          <div class="cred-item"><b>CCNA (200-301) &amp; MTCNA</b><span>One Sky Communication Ltd</span></div>
+          <div class="cred-item"><b>CompTIA A+</b><span>One Sky Communication Ltd</span></div>
+          <div class="cred-item"><b>Cisco CyberOps Associate &amp; Intro to Cyber</b><span>Cisco Networking Academy</span></div>
+        </div>
+        <div>
+          <h3>Education</h3>
+          <div class="cred-item"><b>B.Sc. in Information &amp; Communications Engineering</b><span>East West University, Dhaka — final semester, 2026</span></div>
+          <div class="cred-item"><b>HSC, Science — GPA 3.92</b><span>Willes Little Flower School &amp; College, 2021</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="eyebrow">05 / contact</div>
+      <h2>Get in touch</h2>
+      <p>Open to security engineering and network engineering roles, internships, and SOC/lab collaboration.</p>
+      <a class="send" href="mailto:Sofikul9121@gmail.com">Email Sofikul</a>
+      <footer>Dhaka, Bangladesh · +880 1776 043230</footer>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var hops = Array.prototype.slice.call(document.querySelectorAll('.hop'));
+  var sections = hops.map(function(h){ return document.getElementById(h.dataset.target); });
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var id = entry.target.id;
+      var hop = hops.find(function(h){ return h.dataset.target === id; });
+      if(!hop) return;
+      if(entry.isIntersecting){
+        hops.forEach(function(h){ h.classList.remove('active'); });
+        hop.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+  sections.forEach(function(s){ if(s) observer.observe(s); });
+})();
+</script>
+</body>
+</html>
